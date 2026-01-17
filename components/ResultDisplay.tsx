@@ -19,8 +19,13 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ review, info, onReset }) 
   };
 
   const handleWhatsApp = () => {
+    // Sanitize phone number: remove all non-numeric characters except the plus sign
+    const sanitizedMobile = info.mobile.replace(/[^\d+]/g, '');
     const text = encodeURIComponent(`Feedback for ${info.hotelName}:\n\n${review}`);
-    window.open(`https://wa.me/?text=${text}`, '_blank');
+    
+    // Using the sanitized mobile number ensures the correct contact is opened
+    // Format: https://wa.me/number?text=message
+    window.open(`https://wa.me/${sanitizedMobile}?text=${text}`, '_blank');
   };
 
   const handleEmail = () => {
@@ -42,7 +47,10 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ review, info, onReset }) 
              AI Enhanced
            </div>
         </div>
-        <p className="text-xl text-gray-800 leading-relaxed font-serif italic pt-4">
+        <div className="mb-4">
+          <p className="text-xs text-gray-400 font-medium">STAY AT {info.hotelName.toUpperCase()} • {info.nightsStay} NIGHTS</p>
+        </div>
+        <p className="text-xl text-gray-800 leading-relaxed font-serif italic">
           "{review}"
         </p>
       </div>
@@ -50,26 +58,27 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ review, info, onReset }) 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
         <button
           onClick={handleWhatsApp}
-          className="flex items-center justify-center space-x-2 bg-[#25D366] hover:bg-[#20ba57] text-white py-4 rounded-xl font-semibold transition shadow-md"
+          className="flex flex-col items-center justify-center space-y-1 bg-[#25D366] hover:bg-[#20ba57] text-white py-4 rounded-xl font-semibold transition shadow-md"
+          title={`Send to ${info.mobile}`}
         >
-          <MessageCircle size={20} />
-          <span>WhatsApp</span>
+          <MessageCircle size={24} />
+          <span className="text-xs">WhatsApp</span>
         </button>
 
         <button
           onClick={handleEmail}
-          className="flex items-center justify-center space-x-2 bg-thv-brown hover:bg-black text-white py-4 rounded-xl font-semibold transition shadow-md"
+          className="flex flex-col items-center justify-center space-y-1 bg-thv-brown hover:bg-black text-white py-4 rounded-xl font-semibold transition shadow-md"
         >
-          <Mail size={20} />
-          <span>Email</span>
+          <Mail size={24} />
+          <span className="text-xs">Email</span>
         </button>
 
         <button
           onClick={handleCopy}
-          className="flex items-center justify-center space-x-2 bg-gray-100 hover:bg-gray-200 text-gray-700 py-4 rounded-xl font-semibold transition shadow-md"
+          className="flex flex-col items-center justify-center space-y-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-4 rounded-xl font-semibold transition shadow-md"
         >
-          {copied ? <Check size={20} className="text-green-600" /> : <Copy size={20} />}
-          <span>{copied ? 'Copied' : 'Copy Text'}</span>
+          {copied ? <Check size={24} className="text-green-600" /> : <Copy size={24} />}
+          <span className="text-xs">{copied ? 'Copied' : 'Copy Text'}</span>
         </button>
       </div>
 

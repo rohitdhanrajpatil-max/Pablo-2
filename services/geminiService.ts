@@ -14,19 +14,28 @@ export const generateHumanizedFeedback = async (
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   const prompt = `
-    Act as a professional guest experience consultant for a luxury hotel group. 
-    A guest has provided the following raw verbal feedback after staying at "${info.hotelName}" for ${info.nightsStay} night(s). 
+    Act as a helpful assistant that helps hotel guests write honest, natural-sounding reviews based on their verbal feedback.
     
-    Raw Feedback: "${rawTranscript}"
+    Context:
+    Hotel: "${info.hotelName}"
+    Stay Duration: ${info.nightsStay} night(s)
+    Guest's Raw Notes: "${rawTranscript}"
     
-    Task: 
-    Rewrite this feedback into a polished, humanized, and naturally toned guest review. 
-    It should sound warm, authentic, and sophisticated. 
-    Maintain the core sentiment of the guest (whether positive, constructive, or mixed).
-    Do not include any placeholders like [Guest Name] if they weren't provided.
-    The final output should be a single paragraph review, ready to be sent to management or posted as a testimonial.
+    Task:
+    Rewrite the raw notes into a single paragraph that sounds exactly like a real person wrote it on Google Maps or TripAdvisor.
     
-    Output only the refined review text.
+    CRITICAL RULES for a "Human" feel:
+    1. DO NOT use AI-clichés like "nestled in," "impeccable service," "a testament to," "truly unforgettable," or "delightful stay."
+    2. Use first-person ("I had," "We stayed").
+    3. Keep the tone conversational. Use contractions (it's, didn't, we're).
+    4. Vary sentence length. Some should be short and punchy.
+    5. Be specific. If the guest mentioned a specific detail (like the coffee or the bed), keep that detail.
+    6. Don't make it too perfect. Real people don't use perfectly balanced three-part adjectives in every sentence.
+    7. If the guest had a complaint, keep the honest tone without being overly dramatic.
+    
+    GOAL: If a manager read this, they should believe a real guest typed it on their phone.
+    
+    Output ONLY the refined review text. No introductions or explanations.
   `;
 
   try {
@@ -34,8 +43,8 @@ export const generateHumanizedFeedback = async (
       model: 'gemini-3-flash-preview',
       contents: prompt,
       config: {
-        temperature: 0.7,
-        topP: 0.9,
+        temperature: 0.8, // Slightly higher temperature for more varied, natural phrasing
+        topP: 0.95,
       },
     });
 
@@ -43,22 +52,19 @@ export const generateHumanizedFeedback = async (
       throw new Error("The AI returned an empty response. This might be due to content safety filters.");
     }
 
-    return response.text.trim();
+    return response.text.trim().replace(/^"(.*)"$/, '$1'); // Remove wrapping quotes if AI adds them
   } catch (error: any) {
     console.error("Gemini Error:", error);
     
-    // Handle specific Gemini API error patterns
     const errorMessage = error.message || "";
     if (errorMessage.includes("403")) {
-      throw new Error("Access denied (403). Please verify your API key permissions and project settings.");
+      throw new Error("Access denied (403). Please verify your API key permissions.");
     } else if (errorMessage.includes("429")) {
-      throw new Error("Rate limit exceeded (429). You are sending too many requests. Please wait a moment.");
+      throw new Error("Rate limit exceeded (429). Please wait a moment.");
     } else if (errorMessage.includes("500") || errorMessage.includes("503")) {
-      throw new Error("Gemini server is currently overloaded or down (5xx). Please try again in a few minutes.");
-    } else if (errorMessage.includes("quota")) {
-      throw new Error("API quota exceeded. Please check your billing or usage limits.");
+      throw new Error("Gemini server is currently busy. Please try again.");
     }
     
-    throw new Error(`AI Service Error: ${errorMessage || "An unexpected error occurred while processing your feedback."}`);
+    throw new Error(`AI Service Error: ${errorMessage || "An unexpected error occurred."}`);
   }
 };
