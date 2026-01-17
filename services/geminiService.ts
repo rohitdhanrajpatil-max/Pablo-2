@@ -14,28 +14,27 @@ export const generateHumanizedFeedback = async (
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   const prompt = `
-    Act as a helpful assistant that helps hotel guests write honest, natural-sounding reviews based on their verbal feedback.
+    Act as a helpful assistant that turns a guest's spoken feedback into a natural-sounding, typed review for "${info.hotelName}". The guest stayed for ${info.nightsStay} night(s).
     
-    Context:
-    Hotel: "${info.hotelName}"
-    Stay Duration: ${info.nightsStay} night(s)
-    Guest's Raw Notes: "${rawTranscript}"
+    Raw Verbal Notes: "${rawTranscript}"
     
-    Task:
-    Rewrite the raw notes into a single paragraph that sounds exactly like a real person wrote it on Google Maps or TripAdvisor.
+    Task: 
+    Rewrite this into a short, authentic review that looks like it was typed by a real person on their phone.
     
-    CRITICAL RULES for a "Human" feel:
-    1. DO NOT use AI-clichés like "nestled in," "impeccable service," "a testament to," "truly unforgettable," or "delightful stay."
-    2. Use first-person ("I had," "We stayed").
-    3. Keep the tone conversational. Use contractions (it's, didn't, we're).
-    4. Vary sentence length. Some should be short and punchy.
-    5. Be specific. If the guest mentioned a specific detail (like the coffee or the bed), keep that detail.
-    6. Don't make it too perfect. Real people don't use perfectly balanced three-part adjectives in every sentence.
-    7. If the guest had a complaint, keep the honest tone without being overly dramatic.
+    STRICT "ANTI-AI" RULES:
+    1. NO "AI STRUCTURE": Avoid the "intro-body-conclusion" sandwich. Do not start with "I recently stayed..." and end with "I highly recommend...".
+    2. NO AI TRANSITIONS: Ban words like "Additionally," "Furthermore," "Moreover," "Overall," or "In conclusion."
+    3. NO CLICHÉS: Ban "nestled," "hidden gem," "impeccable," "a testament to," "seamless," or "delightful."
+    4. USE "PHONE-STYLE" PHRASING: Use "Actually," "Anyway," "The best part was," "Bit of a shame that," "Just a heads up."
+    5. CASUAL GRAMMAR: Use contractions (it's, didn't, we'll). It's okay to start a sentence with "And" or "But" to keep it conversational.
+    6. VARY SENTENCE FLOW: Mix short punchy thoughts with one longer, rambling thought. Real people don't write perfectly balanced sentences.
+    7. SPECIFICITY: If the guest mentioned a specific staff name, room number, or food item, make sure it stays.
+    8. NO WRAPPING QUOTES: Do not put the review in quotation marks.
     
-    GOAL: If a manager read this, they should believe a real guest typed it on their phone.
+    THE VIBE: 
+    Think of a text message to a friend or a quick 4-star Google Maps review written while waiting for an Uber. It should feel slightly impulsive and very genuine.
     
-    Output ONLY the refined review text. No introductions or explanations.
+    Output ONLY the review text.
   `;
 
   try {
@@ -43,7 +42,7 @@ export const generateHumanizedFeedback = async (
       model: 'gemini-3-flash-preview',
       contents: prompt,
       config: {
-        temperature: 0.8, // Slightly higher temperature for more varied, natural phrasing
+        temperature: 0.85, // Slightly higher for more "human" variation
         topP: 0.95,
       },
     });
@@ -52,7 +51,14 @@ export const generateHumanizedFeedback = async (
       throw new Error("The AI returned an empty response. This might be due to content safety filters.");
     }
 
-    return response.text.trim().replace(/^"(.*)"$/, '$1'); // Remove wrapping quotes if AI adds them
+    // Double-check for any AI artifacts
+    let result = response.text.trim();
+    
+    // Clean up common AI prefixes if they slip through
+    result = result.replace(/^(Here is a humanized version: |Review: |"|')/i, '');
+    result = result.replace(/("|')$/, '');
+    
+    return result;
   } catch (error: any) {
     console.error("Gemini Error:", error);
     
