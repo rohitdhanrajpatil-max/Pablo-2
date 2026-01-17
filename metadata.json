@@ -1,0 +1,7 @@
+{
+  "name": "THV Guest Feedback AI",
+  "description": "A luxury hotel guest feedback tool that uses voice input and Gemini AI to generate humanized, natural reviews ready for sharing.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
