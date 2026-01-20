@@ -12,6 +12,7 @@ const VoiceCapture: React.FC<VoiceCaptureProps> = ({ onCapture, onBack }) => {
   const [transcript, setTranscript] = useState('');
   const [volume, setVolume] = useState(0);
   const [isSilent, setIsSilent] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   
   const recognitionRef = useRef<any>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -119,10 +120,12 @@ const VoiceCapture: React.FC<VoiceCaptureProps> = ({ onCapture, onBack }) => {
 
   const handleFinish = () => {
     if (transcript.trim().length > 5) {
+      setError(null);
       stopAll();
       onCapture(transcript);
     } else {
-      alert("Please provide a bit more feedback for a better AI response.");
+      setError("Please provide a bit more feedback for a better AI response.");
+      setTimeout(() => setError(null), 3000);
     }
   };
 
@@ -207,6 +210,10 @@ const VoiceCapture: React.FC<VoiceCaptureProps> = ({ onCapture, onBack }) => {
         <p className={`text-lg leading-relaxed ${transcript ? 'text-gray-800' : 'text-gray-400 italic'}`}>
           {transcript || "Speak clearly... your words will appear here in real-time."}
         </p>
+      </div>
+
+      <div className="h-6 text-center">
+        {error && <p className="text-sm text-red-500 animate-pulse">{error}</p>}
       </div>
 
       <div className="grid grid-cols-2 gap-4 w-full">
