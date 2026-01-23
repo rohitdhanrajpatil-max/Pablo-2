@@ -17,6 +17,8 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({ info, setInfo, onNext }) =>
     }
   };
 
+  const isInvalid = !info.hotelName || !info.mobile || info.nightsStay <= 0;
+
   return (
     <form onSubmit={handleSubmit} className="w-full max-w-lg space-y-10">
       <div className="text-center space-y-3">
@@ -82,7 +84,12 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({ info, setInfo, onNext }) =>
 
       <button
         type="submit"
-        className="w-full group flex items-center justify-center gap-3 bg-thv-brown hover:bg-black text-white py-5 rounded-2xl font-bold shadow-xl shadow-thv-brown/10 transform transition-all hover:scale-[1.02] active:scale-[0.98]"
+        disabled={isInvalid}
+        className={`w-full group flex items-center justify-center gap-3 py-5 rounded-2xl font-bold transition-all ${
+          isInvalid
+            ? 'bg-gray-200 text-gray-400 cursor-not-allowed shadow-none'
+            : 'bg-thv-brown hover:bg-black text-white shadow-xl shadow-thv-brown/10 transform hover:scale-[1.02] active:scale-[0.98]'
+        }`}
       >
         Open Voice Studio
         <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
