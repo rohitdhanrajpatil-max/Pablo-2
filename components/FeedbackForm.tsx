@@ -26,12 +26,13 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({ info, setInfo, onNext }) =>
 
       <div className="space-y-6">
         <div className="group">
-          <label className="block text-[11px] font-bold text-thv-gold uppercase tracking-widest mb-2 ml-1 transition-colors group-focus-within:text-thv-orange">Hotel Name</label>
+          <label htmlFor="hotelName" className="block text-[11px] font-bold text-thv-gold uppercase tracking-widest mb-2 ml-1 transition-colors group-focus-within:text-thv-orange">Hotel Name</label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-300 group-focus-within:text-thv-orange transition-colors">
               <Building2 size={18} />
             </div>
             <input
+              id="hotelName"
               required
               type="text"
               className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white border border-gray-100 focus:ring-4 focus:ring-thv-orange/5 focus:border-thv-orange outline-none transition-all font-medium text-thv-brown placeholder:text-gray-300"
@@ -44,12 +45,13 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({ info, setInfo, onNext }) =>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div className="group">
-            <label className="block text-[11px] font-bold text-thv-gold uppercase tracking-widest mb-2 ml-1 transition-colors group-focus-within:text-thv-orange">Your Mobile</label>
+            <label htmlFor="mobile" className="block text-[11px] font-bold text-thv-gold uppercase tracking-widest mb-2 ml-1 transition-colors group-focus-within:text-thv-orange">Your Mobile</label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-300 group-focus-within:text-thv-orange transition-colors">
                 <Smartphone size={18} />
               </div>
               <input
+                id="mobile"
                 required
                 type="tel"
                 className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white border border-gray-100 focus:ring-4 focus:ring-thv-orange/5 focus:border-thv-orange outline-none transition-all font-medium text-thv-brown placeholder:text-gray-300"
@@ -61,12 +63,13 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({ info, setInfo, onNext }) =>
           </div>
 
           <div className="group">
-            <label className="block text-[11px] font-bold text-thv-gold uppercase tracking-widest mb-2 ml-1 transition-colors group-focus-within:text-thv-orange">Nights</label>
+            <label htmlFor="nightsStay" className="block text-[11px] font-bold text-thv-gold uppercase tracking-widest mb-2 ml-1 transition-colors group-focus-within:text-thv-orange">Nights</label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-300 group-focus-within:text-thv-orange transition-colors">
                 <CalendarDays size={18} />
               </div>
               <input
+                id="nightsStay"
                 required
                 type="number"
                 min="1"
