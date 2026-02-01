@@ -114,7 +114,12 @@ const App: React.FC = () => {
           )}
 
           {state === AppState.PROCESSING && !error && (
-            <div className="flex flex-col items-center space-y-8 text-center py-12">
+            <div
+              className="flex flex-col items-center space-y-8 text-center py-12"
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+            >
               <div className="relative">
                 <div className="w-32 h-32 rounded-full border border-thv-gold/20 animate-pulse absolute -inset-4"></div>
                 <div className="w-24 h-24 rounded-full border-b-2 border-thv-orange animate-spin flex items-center justify-center">
@@ -126,6 +131,7 @@ const App: React.FC = () => {
                 <p className="text-gray-500 max-w-sm mx-auto text-sm leading-relaxed">
                   Our intelligence is capturing the nuance of your voice to craft a natural, authentic review.
                 </p>
+                <span className="sr-only">Processing your feedback...</span>
               </div>
             </div>
           )}
