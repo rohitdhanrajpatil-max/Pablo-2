@@ -68,7 +68,7 @@ const App: React.FC = () => {
       <header className="w-full py-8 px-6 flex flex-col items-center border-b border-gray-100 bg-white/50 backdrop-blur-md sticky top-0 z-40">
         <div className="max-w-4xl w-full flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-4">
-            <Logo size="sm" />
+            <Logo size="sm" aria-hidden="true" />
             <div className="h-8 w-[1px] bg-gray-200 hidden sm:block"></div>
             <div>
               <h1 className="text-sm font-bold tracking-widest text-thv-brown uppercase">Guest Studio</h1>
@@ -114,11 +114,12 @@ const App: React.FC = () => {
           )}
 
           {state === AppState.PROCESSING && !error && (
-            <div className="flex flex-col items-center space-y-8 text-center py-12">
+            <div className="flex flex-col items-center space-y-8 text-center py-12" role="status" aria-live="polite">
+              <span className="sr-only">Processing your review...</span>
               <div className="relative">
                 <div className="w-32 h-32 rounded-full border border-thv-gold/20 animate-pulse absolute -inset-4"></div>
                 <div className="w-24 h-24 rounded-full border-b-2 border-thv-orange animate-spin flex items-center justify-center">
-                  <Logo size="sm" />
+                  <Logo size="sm" aria-hidden="true" />
                 </div>
               </div>
               <div className="space-y-3">
@@ -176,7 +177,7 @@ const App: React.FC = () => {
         <div className="flex items-center gap-6 opacity-40 grayscale hover:grayscale-0 transition-all duration-700">
            {/* Subtle decorative icons or brand elements */}
            <div className="w-8 h-[1px] bg-thv-gold"></div>
-           <Logo size="sm" />
+           <Logo size="sm" aria-hidden="true" />
            <div className="w-8 h-[1px] bg-thv-gold"></div>
         </div>
         <div className="space-y-1">

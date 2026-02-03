@@ -225,7 +225,7 @@ const VoiceCapture: React.FC<VoiceCaptureProps> = ({ onCapture, onBack }) => {
     return (
       <div className="flex flex-col items-center space-y-8 w-full max-w-md animate-slideUp py-8">
         <div className="w-24 h-24 bg-red-50 text-red-500 rounded-full flex items-center justify-center border border-red-100 shadow-sm">
-           {permissionError.type === 'denied' ? <Lock size={40} /> : <XCircle size={40} />}
+           {permissionError.type === 'denied' ? <Lock size={40} aria-hidden="true" /> : <XCircle size={40} aria-hidden="true" />}
         </div>
         
         <div className="text-center space-y-4">
@@ -260,7 +260,7 @@ const VoiceCapture: React.FC<VoiceCaptureProps> = ({ onCapture, onBack }) => {
               onClick={toggleListening}
               className="w-full flex items-center justify-center gap-3 bg-thv-brown hover:bg-black text-white py-5 rounded-2xl font-bold shadow-xl shadow-thv-brown/10 transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
-              <RefreshCw size={20} />
+              <RefreshCw size={20} aria-hidden="true" />
               Try Again
             </button>
           )}
@@ -314,7 +314,7 @@ const VoiceCapture: React.FC<VoiceCaptureProps> = ({ onCapture, onBack }) => {
               transform: isListening ? `scale(${buttonScale})` : 'scale(1)'
             }}
           >
-            {isListening ? <MicOff size={44} className="text-white" /> : <Mic size={44} className="text-white" />}
+            {isListening ? <MicOff size={44} className="text-white" aria-hidden="true" /> : <Mic size={44} className="text-white" aria-hidden="true" />}
           </button>
         </div>
 
@@ -322,7 +322,7 @@ const VoiceCapture: React.FC<VoiceCaptureProps> = ({ onCapture, onBack }) => {
           {isListening ? (
             isSilent ? (
               <div className="flex items-center gap-2 text-gray-400 text-xs font-bold uppercase tracking-widest animate-pulse">
-                <AlertCircle size={14} /> 
+                <AlertCircle size={14} aria-hidden="true" />
                 Waiting for audio...
               </div>
             ) : (
