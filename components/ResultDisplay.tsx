@@ -34,7 +34,7 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ review, info, onReset }) 
     <div className="w-full max-w-2xl flex flex-col items-center space-y-10">
       <div className="text-center space-y-2">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-thv-orange/10 border border-thv-orange/20 text-thv-orange text-[10px] font-bold uppercase tracking-widest mb-2">
-          <Sparkles size={12} />
+          <Sparkles size={12} aria-hidden="true" />
           Humanized by AI
         </div>
         <h2 className="text-3xl font-bold text-thv-brown tracking-tight">Your Feedback is Ready</h2>
@@ -76,7 +76,7 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ review, info, onReset }) 
             onClick={handleWhatsApp}
             className="flex items-center justify-center gap-3 bg-[#25D366] hover:bg-[#1fb355] text-white py-5 rounded-2xl font-bold transition-all hover:scale-[1.02] shadow-xl shadow-[#25D366]/10"
           >
-            <MessageCircle size={20} />
+            <MessageCircle size={20} aria-hidden="true" />
             WhatsApp
           </button>
 
@@ -84,7 +84,7 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ review, info, onReset }) 
             onClick={handleEmail}
             className="flex items-center justify-center gap-3 bg-thv-brown hover:bg-black text-white py-5 rounded-2xl font-bold transition-all hover:scale-[1.02] shadow-xl shadow-thv-brown/10"
           >
-            <Mail size={20} />
+            <Mail size={20} aria-hidden="true" />
             Email
           </button>
 
@@ -94,7 +94,7 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ review, info, onReset }) 
               copied ? 'bg-green-50 text-green-700 border-green-100' : 'bg-white text-gray-600 hover:bg-gray-50 shadow-lg shadow-gray-200/50'
             }`}
           >
-            {copied ? <Check size={20} /> : <Copy size={20} />}
+            {copied ? <Check size={20} aria-hidden="true" /> : <Copy size={20} aria-hidden="true" />}
             {copied ? 'Copied' : 'Copy Text'}
           </button>
         </div>
@@ -103,7 +103,7 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ review, info, onReset }) 
           onClick={onReset}
           className="flex items-center gap-2 text-thv-gold hover:text-thv-brown font-bold text-xs tracking-widest uppercase transition-colors group"
         >
-          <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
+          <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" aria-hidden="true" />
           Create New Feedback
         </button>
       </div>
