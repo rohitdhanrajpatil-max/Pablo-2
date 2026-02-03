@@ -6,7 +6,8 @@ import VoiceCapture from './components/VoiceCapture';
 import ResultDisplay from './components/ResultDisplay';
 import { AppState, GuestInfo } from './types';
 import { generateHumanizedFeedback } from './services/geminiService';
-import { Loader2, AlertCircle, RefreshCcw, Home, MessageSquare, CheckCircle } from 'lucide-react';
+// Added MessageSquare and Home to the lucide-react import list to fix compilation errors
+import { Loader2, AlertCircle, RefreshCcw, WifiOff, ShieldAlert, Zap, SearchX, ArrowRight, HelpCircle, MessageSquare, Home } from 'lucide-react';
 
 const App: React.FC = () => {
   const [state, setState] = useState<AppState>(AppState.IDLE);
@@ -49,6 +50,63 @@ const App: React.FC = () => {
     setGeneratedReview('');
     setLastTranscript('');
     setError(null);
+  };
+
+  const getErrorDiagnostics = (msg: string) => {
+    const lowerMsg = msg.toLowerCase();
+    if (lowerMsg.includes("internet") || lowerMsg.includes("network") || lowerMsg.includes("offline")) {
+      return {
+        icon: <WifiOff className="text-orange-500" />,
+        title: "Connection Issue",
+        suggestions: [
+          "Check if your Wi-Fi or mobile data is active.",
+          "Disable any VPNs that might interfere with the connection.",
+          "Try switching from Wi-Fi to mobile data (or vice versa)."
+        ]
+      };
+    }
+    if (lowerMsg.includes("403") || lowerMsg.includes("access denied") || lowerMsg.includes("permission")) {
+      return {
+        icon: <ShieldAlert className="text-red-500" />,
+        title: "Access Restricted",
+        suggestions: [
+          "The API key may have reached its usage limit or is restricted.",
+          "Ensure you are in a supported region for Gemini AI.",
+          "Refresh the application to re-authenticate the session."
+        ]
+      };
+    }
+    if (lowerMsg.includes("429") || lowerMsg.includes("rate limit") || lowerMsg.includes("busy")) {
+      return {
+        icon: <Zap className="text-blue-500" />,
+        title: "System Congestion",
+        suggestions: [
+          "The AI servers are currently busy. Wait 30 seconds and try again.",
+          "Too many attempts in a short time. Please take a brief pause.",
+          "Try reducing the length of the verbal input slightly."
+        ]
+      };
+    }
+    if (lowerMsg.includes("empty response") || lowerMsg.includes("safety") || lowerMsg.includes("filter")) {
+      return {
+        icon: <SearchX className="text-purple-500" />,
+        title: "Content Review Needed",
+        suggestions: [
+          "The AI couldn't generate a response. Try rephrasing your feedback.",
+          "Avoid sensitive or restricted topics in your verbal notes.",
+          "Speak a few more sentences to provide better context for the AI."
+        ]
+      };
+    }
+    return {
+      icon: <HelpCircle className="text-gray-500" />,
+      title: "Unexpected Error",
+      suggestions: [
+        "Click the retry button below to try generating again.",
+        "Go back to the recording step and try speaking again.",
+        "Restart the process if the issue persists."
+      ]
+    };
   };
 
   const currentStep = () => {
@@ -131,20 +189,54 @@ const App: React.FC = () => {
           )}
 
           {state === AppState.PROCESSING && error && (
-            <div className="flex flex-col items-center space-y-8 text-center max-w-md py-12">
-              <div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center border border-red-100 shadow-sm">
+            <div className="w-full max-w-xl flex flex-col items-center space-y-8 py-4 animate-slideUp">
+              {/* Header Icon */}
+              <div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center border border-red-100 shadow-sm relative">
                 <AlertCircle size={40} />
-              </div>
-              <div className="space-y-4">
-                <h3 className="text-2xl font-bold text-red-700">Generation Interrupted</h3>
-                <div className="text-sm text-gray-600 bg-red-50/50 p-6 rounded-3xl border border-red-100 leading-relaxed font-medium">
-                  {error}
+                <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-sm border border-red-100">
+                  <div className="w-4 h-4 rounded-full bg-red-500 animate-pulse"></div>
                 </div>
               </div>
-              <div className="flex flex-col gap-4 w-full">
+
+              <div className="text-center space-y-4 w-full">
+                <h3 className="text-3xl font-bold text-red-700 tracking-tight">Generation Interrupted</h3>
+                
+                {/* Main Error Box */}
+                <div className="bg-red-50/30 p-8 rounded-[32px] border border-red-100 text-left space-y-6">
+                  <div className="flex items-start gap-4">
+                    <div className="p-3 bg-white rounded-2xl shadow-sm shrink-0">
+                      {getErrorDiagnostics(error).icon}
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-red-900 mb-1">{getErrorDiagnostics(error).title}</h4>
+                      <p className="text-sm text-red-700/80 font-medium leading-relaxed">
+                        {error}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Troubleshooting Guide */}
+                  <div className="space-y-4 pt-4 border-t border-red-100/50">
+                    <p className="text-[10px] font-bold text-thv-gold uppercase tracking-widest px-1">Potential Solutions:</p>
+                    <div className="grid grid-cols-1 gap-3">
+                      {getErrorDiagnostics(error).suggestions.map((s, i) => (
+                        <div key={i} className="flex items-center gap-3 p-3 bg-white/50 rounded-xl border border-red-50 hover:bg-white transition-colors">
+                          <div className="w-5 h-5 rounded-full bg-red-100 text-red-600 text-[10px] flex items-center justify-center font-bold shrink-0">
+                            {i + 1}
+                          </div>
+                          <p className="text-xs text-gray-700 font-medium">{s}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4 w-full pt-4">
                 <button
                   onClick={handleRetry}
-                  className="w-full flex items-center justify-center gap-3 bg-thv-brown hover:bg-black text-white py-5 rounded-2xl font-bold shadow-xl shadow-thv-brown/10 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  className="flex-1 flex items-center justify-center gap-3 bg-thv-brown hover:bg-black text-white py-5 rounded-2xl font-bold shadow-xl shadow-thv-brown/10 transition-all hover:scale-[1.02] active:scale-[0.98]"
                 >
                   <RefreshCcw size={20} />
                   Retry Generation
@@ -154,11 +246,20 @@ const App: React.FC = () => {
                     setError(null);
                     setState(AppState.RECORDING);
                   }}
-                  className="w-full text-thv-gold hover:text-thv-brown font-bold text-sm tracking-widest uppercase py-2 transition"
+                  className="flex-1 flex items-center justify-center gap-3 bg-white border border-gray-100 text-thv-gold hover:text-thv-brown py-5 rounded-2xl font-bold shadow-sm transition-all hover:bg-gray-50 active:scale-[0.98]"
                 >
-                  Back to Mic
+                  <MessageSquare size={20} />
+                  Re-record Audio
                 </button>
               </div>
+
+              <button
+                onClick={handleReset}
+                className="text-gray-400 hover:text-thv-brown font-bold text-xs tracking-widest uppercase py-2 transition flex items-center gap-2"
+              >
+                <Home size={14} />
+                Return to Home
+              </button>
             </div>
           )}
 
