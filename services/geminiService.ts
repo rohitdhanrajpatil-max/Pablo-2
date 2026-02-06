@@ -14,27 +14,28 @@ export const generateHumanizedFeedback = async (
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   const prompt = `
-    Act as a helpful assistant that turns a guest's spoken feedback into a natural-sounding, typed review for "${info.hotelName}". The guest stayed for ${info.nightsStay} night(s).
+    Act as a professional hospitality editor for "${info.hotelName}". 
+    The guest stayed for ${info.nightsStay} night(s) and provided feedback in their native language.
     
-    Raw Verbal Notes: "${rawTranscript}"
+    RAW GUEST INPUT (MAY BE IN ANY LANGUAGE): "${rawTranscript}"
     
-    Task: 
-    Rewrite this into a short, authentic review that looks like it was typed by a real person on their phone.
+    YOUR MISSION:
+    1. TRANSLATE: If the input is not in English, translate it accurately to English.
+    2. HUMANIZE: Rewrite the translated feedback into a natural, "typed-on-a-phone" English review.
     
-    STRICT "ANTI-AI" RULES:
-    1. NO "AI STRUCTURE": Avoid the "intro-body-conclusion" sandwich. Do not start with "I recently stayed..." and end with "I highly recommend...".
-    2. NO AI TRANSITIONS: Ban words like "Additionally," "Furthermore," "Moreover," "Overall," or "In conclusion."
-    3. NO CLICHÉS: Ban "nestled," "hidden gem," "impeccable," "a testament to," "seamless," or "delightful."
-    4. USE "PHONE-STYLE" PHRASING: Use "Actually," "Anyway," "The best part was," "Bit of a shame that," "Just a heads up."
-    5. CASUAL GRAMMAR: Use contractions (it's, didn't, we'll). It's okay to start a sentence with "And" or "But" to keep it conversational.
-    6. VARY SENTENCE FLOW: Mix short punchy thoughts with one longer, rambling thought. Real people don't write perfectly balanced sentences.
-    7. SPECIFICITY: If the guest mentioned a specific staff name, room number, or food item, make sure it stays.
-    8. NO WRAPPING QUOTES: Do not put the review in quotation marks.
+    STRICT "ANTI-AI" STYLE RULES FOR THE ENGLISH OUTPUT:
+    - NO "AI STRUCTURE": Do not use formal intros like "My stay was..." or formal conclusions.
+    - NO CORPORATE TRANSITIONS: Ban "Moreover," "Furthermore," "In summary," or "Additionally."
+    - NO AI CLICHÉS: Ban "nestled," "hidden gem," "impeccable," "a testament to," or "seamless."
+    - USE CASUAL PHRASING: Use "Actually," "Honestly," "The best bit was," "Bit of a letdown that," "Heads up for others."
+    - REAL-WORLD GRAMMAR: Use contractions (it's, wasn't, we'll). It's okay to use fragments or start sentences with "And" or "But".
+    - VARY THE FLOW: Mix short punchy observations with one slightly longer, conversational thought.
+    - PRESERVE DETAILS: Keep any specific names of staff, food, or room numbers mentioned.
     
-    THE VIBE: 
-    Think of a text message to a friend or a quick 4-star Google Maps review written while waiting for an Uber. It should feel slightly impulsive and very genuine.
+    THE FINAL VIBE: 
+    It should look like a 4 or 5-star Google Maps or TripAdvisor review written by a real traveler on the move. Impulsive, honest, and completely devoid of "GPT-speak".
     
-    Output ONLY the review text.
+    Output ONLY the final English review text. No translation notes. No quotes.
   `;
 
   try {
@@ -42,7 +43,7 @@ export const generateHumanizedFeedback = async (
       model: 'gemini-3-flash-preview',
       contents: prompt,
       config: {
-        temperature: 0.85, // Slightly higher for more "human" variation
+        temperature: 0.85,
         topP: 0.95,
       },
     });
@@ -51,7 +52,6 @@ export const generateHumanizedFeedback = async (
       throw new Error("The AI returned an empty response. This might be due to content safety filters.");
     }
 
-    // Double-check for any AI artifacts
     let result = response.text.trim();
     
     // Clean up common AI prefixes if they slip through
@@ -67,8 +67,6 @@ export const generateHumanizedFeedback = async (
       throw new Error("Access denied (403). Please verify your API key permissions.");
     } else if (errorMessage.includes("429")) {
       throw new Error("Rate limit exceeded (429). Please wait a moment.");
-    } else if (errorMessage.includes("500") || errorMessage.includes("503")) {
-      throw new Error("Gemini server is currently busy. Please try again.");
     }
     
     throw new Error(`AI Service Error: ${errorMessage || "An unexpected error occurred."}`);
