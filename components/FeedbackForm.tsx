@@ -10,9 +10,11 @@ interface FeedbackFormProps {
 }
 
 const FeedbackForm: React.FC<FeedbackFormProps> = ({ info, setInfo, onNext }) => {
+  const isFormValid = info.hotelName.trim() !== '' && info.mobile.trim() !== '' && info.nightsStay > 0;
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (info.hotelName && info.mobile && info.nightsStay > 0) {
+    if (isFormValid) {
       onNext();
     }
   };
@@ -82,7 +84,8 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({ info, setInfo, onNext }) =>
 
       <button
         type="submit"
-        className="w-full group flex items-center justify-center gap-3 bg-thv-brown hover:bg-black text-white py-5 rounded-2xl font-bold shadow-xl shadow-thv-brown/10 transform transition-all hover:scale-[1.02] active:scale-[0.98]"
+        disabled={!isFormValid}
+        className="w-full group flex items-center justify-center gap-3 bg-thv-brown hover:bg-black text-white py-5 rounded-2xl font-bold shadow-xl shadow-thv-brown/10 transform transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100"
       >
         Open Voice Studio
         <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
